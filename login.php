@@ -1,53 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
 
-    <title>Portfolio</title>
+require 'includes/config.php';
 
-    <!-- Styles -->
-    <!-- Bootstrap -->
-    <link href="css/app.css" rel="stylesheet">
+if (loggedIn()) {
+  // redirect('index.php');
+}
 
-</head>
-<body>
-    <div id="app">
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+  // First validation
+  if (empty($_POST['username']) || empty($_POST['password'])) {
+    addMessage('error',  'Please enter both fields!');
+    redirect('login.php');
+  }
+
+  // Next try to get the user from the database
+  $username = strtolower($_POST['username']);
+  $password = strtolower($_POST['password']);
+  $user = getUser($dbh, $username);
+
+  $passwordMatches = password_verify($password, $user['password']);
+
+  // Test that the entered details match the login details
+  if (!empty($user) && ($username === strtolower($user['username']) || $username === strtolower($user['email'])) && $passwordMatches) {
+    // Add data to the session
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['email'] = $user['email'];
+
+
+    addMessage('success', 'You have been logged in');
+    // Redirect to the dashboard
+    redirect('index.php');
+  }
+  else {
+    addMessage('error', 'Username and password do not match our records');
+  }
+}
+
+$page['title'] = 'Login';
+require 'partials/header.php';
+require 'partials/navigation.php';
+
+?>
+ 
 
         <!-- Start of Navigation -->
-        <nav class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-
-                    <!-- Collapsed Hamburger -->
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                        <span class="sr-only">Toggle Navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-
-                    <!-- Branding Image -->
-                    <a class="navbar-brand" href="index.php">
-                        Portfolio
-                    </a>
-                </div>
-
-                <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="nav navbar-nav">
-                        &nbsp;
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="nav navbar-nav navbar-right">
-                            <li><a href="index.php">Home</a></li>
-                            <li><a href="login.php">Login</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        
         <!-- End of Navigation -->
 
         <!-- Start of Content -->
@@ -61,10 +59,10 @@
 
                                 <!-- Email Input -->
                                 <div class="form-group">
-                                    <label for="email" class="col-md-4 control-label">Email Address</label>
+                                    <label for="username" class="col-md-4 control-label">Email/Username</label>
 
                                     <div class="col-md-6">
-                                        <input id="email" type="email" class="form-control" name="email" value="" required="" autofocus="">
+                                        <input id="username" type="username" class="form-control" name="username" value="" autofocus="">
 
                                     </div>
                                 </div>
@@ -74,7 +72,7 @@
                                     <label for="password" class="col-md-4 control-label">Password</label>
 
                                     <div class="col-md-6">
-                                        <input id="password" type="password" class="form-control" name="password" required="">
+                                        <input id="password" type="password" class="form-control" name="password" >
                                     </div>
                                 </div>
 
@@ -86,6 +84,7 @@
                                         </button>
                                     </div>
                                 </div>
+                                <div><?= showMessages() ?></div>
 
                             </form>
                         </div>
@@ -98,7 +97,6 @@
 
     <!-- Scripts -->
     <!-- Bootstrap JavaScript -->
-    <script src="js/app.js"></script>
-
-</body>
-</html>
+   <?php
+   require 'partials/footer.php';
+   ?>

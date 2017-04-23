@@ -1,53 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+require 'includes/config.php';
 
-    <title>Portfolio</title>
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$title = $img_url = $content = $link = '';
+// Add data from form
+$title = $_POST['title'];
+$img_url = $_POST['img_url'];
+$content = $_POST['content'];
+$link = $_POST['link'];
+addMessage('success', 'New Project successfully added!');
+    redirect('index.php');
 
-    <!-- Styles -->
-    <!-- Bootstrap -->
-    <link href="css/app.css" rel="stylesheet">
+            
+// Next, we must do some validation to see if we got valid data
+$errors = [];
 
-</head>
+
+
+addProject($dbh, $title, $img_url, $content, $link);
+}
+
+
+require 'partials/header.php';
+require 'partials/navigation.php';
+
+
+?>
+
 <body>
     <div id="app">
 
         <!-- Start of Navigation -->
-        <nav class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-
-                    <!-- Collapsed Hamburger -->
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                        <span class="sr-only">Toggle Navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-
-                    <!-- Branding Image -->
-                    <a class="navbar-brand" href="index.php">
-                        Portfolio
-                    </a>
-                </div>
-
-                <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="nav navbar-nav">
-                        &nbsp;
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="nav navbar-nav navbar-right">
-                            <li><a href="index.php">Home</a></li>
-                            <li><a href="login.php">Login</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+       
         <!-- End of Navigation -->
 
         <!-- Start of Content -->
@@ -70,44 +54,44 @@
 
                                 <!-- Title Input -->
                                 <div class="form-group">
-                                    <label for="projectName" class="col-md-4 control-label">Title</label>
+                                    <label for="title" class="col-md-4 control-label">Title</label>
 
                                     <div class="col-md-6">
-                                        <input id="projectName" type="text" class="form-control" name="projectName" value="" required="" autofocus="">
+                                        <input id="title" type="text" class="form-control" name="title" value="" autofocus="">
                                     </div>
                                 </div>
 
                                 <!-- Image Url Input -->
                                 <div class="form-group">
-                                    <label for="projectImgUrl" class="col-md-4 control-label">Image Url</label>
+                                    <label for="img_url" class="col-md-4 control-label">Image Url</label>
 
                                     <div class="col-md-6">
-                                        <input id="projectImgUrl" type="text" class="form-control" name="projectImgUrl" value="" required="" autofocus=""  onchange="readURL(this)">
+                                        <input id="img_url" type="text" class="form-control" name="img_url" value="" autofocus=""  onchange="readURL(this)">
                                     </div>
                                 </div>
 
                                 <!-- Content Input -->
                                 <div class="form-group">
-                                    <label for="projectContent" class="col-md-4 control-label">Content</label>
+                                    <label for="content" class="col-md-4 control-label">Content</label>
 
                                     <div class="col-md-6">
-                                        <input id="projectContent" type="text" class="form-control" name="projectContent" value="" required="" autofocus="">
+                                        <input id="content" type="text" class="form-control" name="content" value="" autofocus="">
                                     </div>
                                 </div>
 
                                 <!-- Link Input -->
                                 <div class="form-group">
-                                    <label for="projectLink" class="col-md-4 control-label">Link</label>
+                                    <label for="link" class="col-md-4 control-label">Link</label>
 
                                     <div class="col-md-6">
-                                        <input id="projectLink" type="text" class="form-control" name="projectLink" value="" required="" autofocus="">
+                                        <input id="link" type="text" class="form-control" name="link" value="" autofocus="">
                                     </div>
                                 </div>
 
                                  <!-- Submit Button -->
                                 <div class="form-group">
                                     <div class="col-md-8 col-md-offset-4">
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary" onsubmit="addProject">
                                             Add
                                         </button>
                                     </div>
@@ -130,21 +114,25 @@
         <!-- End of Content -->
     </div>
     <!-- Scripts -->
-    <script src="js/app.js"></script>
+    <!-- <script src="js/app.js"></script>
     <script type="text/javascript">
 
-      function readURL(input) {
-        var url = input.value;
-        var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
-        if (url && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+     //  function readURL(input) {
+     //    var url = input.value;
+     //    var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+     //    if (url && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
 
-          $('#projectThumbnail').attr('src', url);
+     //      $('#projectThumbnail').attr('src', url);
 
-        }else{
-         $('#projectThumbnail').attr('src', 'img/place-holder.png');
-       }
-     }
+     //    }else{
+     //     $('#projectThumbnail').attr('src', 'img/place-holder.png');
+     //   }
+     // }
 
-    </script>
+    </script> -->
 </body>
 </html>
+
+<?php
+require 'partials/footer.php';
+?>

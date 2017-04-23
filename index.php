@@ -1,88 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<?php
+require 'includes/config.php';
 
-    <title>Portfolio</title>
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    if ($_POST["_method"] == "delete") {
+        $id=$_POST['id'];
+        deleteProject($id, $dbh);
+        redirect('index.php');
+    }
 
-    <!-- Styles -->
-    <!-- Bootstrap -->
-    <link href="css/app.css" rel="stylesheet">
-    <!-- Custom -->
-    <link href="css/custom.css" rel="stylesheet">
+    if ($_POST["_method"] == "edit") {
+        $id=$_POST['id'];
+                // editProject($id, $dbh);
+        redirect('edit.php?id=' . $id);
+    }
 
-</head>
-
-<body>
-    <div id="app">
-
-        <!-- Start of Navigation -->
-        <nav class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <div class="navbar-header">
-
-                    <!-- Collapsed Hamburger -->
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
-                        <span class="sr-only">Toggle Navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-
-                    <!-- Branding Image -->
-                    <a class="navbar-brand" href="index.php">
-                        Portfolio
-                    </a>
-                </div>
-
-                <div class="collapse navbar-collapse" id="app-navbar-collapse">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="nav navbar-nav">
-                        &nbsp;
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="nav navbar-nav navbar-right">
-                            <li><a href="index.php">Home</a></li>
-                            <li><a href="login.php">Login</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- End of Navigation -->
-
-        <!-- Start of Content -->
-        <div class="container">
-            <div class="row">
-            <!-- Your loop will start here and loop through the card markup -->
-
-                <!-- Start of Card -->
-                <div class="col-md-3">
-                    <div class="panel panel-default">
-                        <div class="panel-heading card-header">
-                        <img class="img-responsive" src="http://placehold.it/250x250/eee">
-                        </div>
-
-                        <div class="panel-body">
-                            <h4>Card title</h4>
-                            <p>
-                                This is where your card content will be display, Could be a little information on your project
-                            </p>
-                            <a href="#" class="btn btn-default btn-xs">
-                                View
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- End of Card -->
+    if ($_POST["_method"] == "view") {
+        $id=$_POST['viewid'];
+                // editProject($id, $dbh);
+        redirect('view.php?id=' . $id);
+    }
+}
 
 
-            </div>
+$projects = getProjects($dbh);
+
+
+
+require 'partials/header.php';
+require 'partials/navigation.php';
+
+?>
+
+
+
+<!-- Start of Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12"><?= showMessages() ?>
         </div>
-    <!-- Scripts -->
-    <!-- Bootstrap JavaScript -->
-    <script src="js/app.js"></script>
-</body>
-</html>
+    </div>
+
+    <div class="row">
+
+        <?php foreach ($projects as $project):?>
+
+           <!-- Start of Card -->
+           <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading card-header">
+                    <img class="img-responsive" src="<?= $project['img_url'] ?>">
+                </div>
+
+                <div class="panel-body">
+                    <h4><?= $project['title'] ?></h4>
+                    <p>
+                        <?= $project['content'] ?>
+                    </p>
+                    <form method="POST" action="index.php" style="display: inline-block;">
+
+                       <input name="_method" type="hidden" value="view">
+
+                       <input name="viewid" type="hidden" value="<?= $project['id'] ?>">
+
+                       <button type="submit" class="btn btn-default btn-xs">
+                         <i class="icon ion-eye"></i> View
+                     </button>
+                 </form>
+
+                 <div class="pull-right"><?php if(loggedIn()): ?>
+                   <!-- Edit Button and Form -->
+                   <form method="POST" action="index.php" style="display: inline-block;">
+                     <input name="_method" type="hidden" value="edit">
+                     <input name="id" type="hidden" value="<?= $project['id'] ?>">
+                     <button type="submit" class="btn btn-default btn-xs">
+                       <i class="icon ion-edit"></i> Edit
+                   </button>
+               </form>
+               <!-- Delete Button and Form -->
+               <form method="POST" action="index.php" style="display: inline-block;">
+                 <input name="_method" type="hidden" value="delete">
+                 <input name="id" type="hidden" value="<?= $project['id'] ?>">
+                 <button onclick="return confirm('Are you sure you want to delete this item?');" type="submit" class="btn btn-default btn-xs btn-danger">
+                   <i class="icon ion-ios-close-outline"></i> Delete
+               </button>
+           </form>
+       <?php endif; ?>
+   </div>
+
+</div>
+
+</div>
+</div>
+<?php endforeach; ?>
+
+</div>
+</div>
+
+
+<!-- End of Card -->
+
+<!-- End of single result -->
+
+<!-- Scripts -->
+<!-- Bootstrap JavaScript -->
+
+<?php
+require 'partials/footer.php';
+?>
